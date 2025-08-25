@@ -2,6 +2,7 @@ import React from 'react'
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Message from '@/components/message';
 const rooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
 const messages = [
     {
@@ -37,19 +38,8 @@ function page() {
                 </div>
                 <div className='h-[calc(100vh-8rem)] overflow-y-auto px-3'>
                     {
-                        messages.map((message) => (
-                            <div className='flex items-start my-3 bg-accent p-2 rounded-b-sm' key={message.id}>
-                                <div className='w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold mr-3'>
-                                    {message.username.charAt(0).toUpperCase()}
-                                </div>
-                                <div className='w-full'>
-                                    <div className='flex items-center justify-between'>
-                                        <div className='flex items-center'>{message.username}</div>
-                                        <span>{message.timestamp}</span>
-                                    </div>
-                                    <p>{message.content}</p>
-                                </div>
-                            </div>
+                        messages.map((msg) => (
+                            <Message key={msg.id} message={msg} />
                         ))
                     }
                 </div>
