@@ -3,6 +3,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Message from '@/components/message';
+import Image from 'next/image';
 const rooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
 const messages = [
     {
@@ -39,12 +40,46 @@ function page() {
                 <div className='h-[calc(100vh-8rem)] overflow-y-auto px-3'>
                     {
                         messages.map((msg) => (
-                            <Message key={msg.id} message={msg} />
+                            <Message
+                                key={msg.id}
+                                id={msg.id}
+                                username={msg.username}
+                                content={msg.content}
+                                timestamp={msg.timestamp}
+                            />
                         ))
                     }
                 </div>
                 <Textarea placeholder='Enter your text ' />
             </div>
+            <section className='w-64 h-screen p-3 border-l border-gray-300 flex flex-col'>
+                <div className="flex-1">
+                    <h1 className='font-bold text-2xl'>Room Info</h1>
+                    <p className='mt-3'>This is the general room. Feel free to chat about anything!</p>
+                    <h2 className='font-bold my-5 text-lg'>Members</h2>
+                    <div className='overflow-y-auto'>
+                        {messages.map((user) => (
+                            <div key={user.id} className='flex items-center justify-start mb-3'>
+                                <Image
+                                    src="/profile.jpg"
+                                    alt={user.username}
+                                    width={40}
+                                    height={40}
+                                    className='rounded-full mr-2'
+                                />
+                                <h1 className='rounded cursor-pointer text-lg tracking-wide'>
+                                    {user.username}
+                                </h1>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <Button className='w-full mt-auto bg-white text-red-600 border-2 border-red-600 cursor-pointer hover:bg-red-600 hover:text-white'>
+                    Leave Room
+                </Button>
+            </section>
+
+
         </main>
     )
 }
