@@ -22,22 +22,22 @@ const messages = [
 function page() {
     return (
         <main className='flex h-screen'>
-            <div className='w-48  h-screen p-3 flex flex-col border-gray-300 border-r'>
+            <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r'>
                 <Button className='w-full cursor-pointer' >Create Room</Button>
-                <Input className='mt-3 ' placeholder='Search Room' />
+                <Input className='mt-3' placeholder='Search Room' />
                 <div>
                     {
                         rooms.map((room) => (
-                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer '># {room}</h1>
+                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-accent'># {room}</h1>
                         ))
                     }
                 </div>
             </div>
-            <div className='flex-1 h-screen '>
-                <div className='h-16 border-b border-gray-300 flex items-center px-3'>
+            <section className='flex-1 h-screen py-2 flex flex-col justify-between'>
+                <div className='h-12 border-b border-gray-300 flex items-center px-3'>
                     <h1 className='font-bold text-lg'># general</h1>
                 </div>
-                <div className='h-[calc(100vh-8rem)] overflow-y-auto px-3'>
+                <div className='h-full overflow-y-auto px-3'>
                     {
                         messages.map((msg) => (
                             <Message
@@ -50,8 +50,10 @@ function page() {
                         ))
                     }
                 </div>
-                <Textarea placeholder='Enter your text ' />
-            </div>
+                <div className='h-20 p-3'>
+                    <Textarea placeholder='Enter your text here' className='border-2 border-slate-300' />
+                </div>
+            </section>
             <section className='w-64 h-screen p-3 border-l border-gray-300 flex flex-col'>
                 <div className="flex-1">
                     <h1 className='font-bold text-2xl'>Room Info</h1>
