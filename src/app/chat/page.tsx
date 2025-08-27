@@ -1,25 +1,33 @@
-import React from 'react'
-import { Textarea } from '@/components/ui/textarea';
+"use client"
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Message from '@/components/message';
 import Image from 'next/image';
+import { FiSend } from 'react-icons/fi';
+import { messageType } from '@/types';
 const rooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
-const messages = [
-    {
-        id: 1,
-        username: 'John',
-        content: 'Hello, everyone!',
-        timestamp: '10:00 AM'
-    },
-    {
-        id: 2,
-        username: 'Alice',
-        content: 'Hi, John! How are you?',
-        timestamp: '10:01 AM'
-    }
-]
+
 function page() {
+    const [message, setMessage] = useState<messageType>({} as messageType);
+    const [messages, setMessages] = useState<messageType[]>([]);
+    const handleSetMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage({ ...message, content: e.target.value } as messageType);
+        console.log(message)
+    }
+    const handleSendMessage = () => {
+        if (message && message.content) {
+            const newMessage = {
+                ...message,
+                id: Math.random().toString(36).substring(2, 15),
+                username: 'User' + Math.floor(Math.random() * 1000),
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            setMessages([...messages, newMessage]);
+            setMessage({ ...message, content: '' } as messageType);
+        }
+        
+    }
     return (
         <main className='flex h-screen'>
             <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r'>
@@ -42,7 +50,6 @@ function page() {
                         messages.map((msg) => (
                             <Message
                                 key={msg.id}
-                                id={msg.id}
                                 username={msg.username}
                                 content={msg.content}
                                 timestamp={msg.timestamp}
@@ -50,8 +57,11 @@ function page() {
                         ))
                     }
                 </div>
-                <div className='h-20 p-3'>
-                    <Textarea placeholder='Enter your text here' className='border-2 border-slate-300' />
+                <div className="flex px-1 w-full h-20 items-center py-1 gap-2 border-t border-gray-400">
+                    <Input type="text" value={message?.content}  placeholder="Type your message here" className='w-full ' onChange={(e) => handleSetMessage(e)} />
+                    <Button className='bg-primary text-white  active:opacity-50 ' onClick={() => {handleSendMessage()}}>
+                        Send<FiSend size={40} />
+                    </Button>
                 </div>
             </section>
             <section className='w-64 h-screen p-3 border-l border-gray-300 flex flex-col'>
