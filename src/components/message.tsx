@@ -1,20 +1,24 @@
 import React from 'react'
 import { messageType } from '@/types';
 
-function ClientMessage(message: messageType) {
-    const username = message?.username || 'Anonymous';
+function ClientMessage({username,content,isOwnMessage,timestamp}: messageType) {
     const userInitial = username.charAt(0).toUpperCase();
     return (
-        <div className='flex  w-2/4 my-1 bg-primary p-2 rounded-md' >
-            <div className='w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold mr-3'>
-                {userInitial}
-            </div>
-            <div className='w-full'>
-                <div className='flex items-center justify-between text-white font-extralight tracking-wide'>
-                    <div className='flex items-center'>{username}</div>
-                    <span>{message?.timestamp}</span>
-                </div>
-                <p className='text-white text-lg font-medium'>{message?.content}</p>
+        <div className={`mb-4 max-w-xs lg:max-w-md ${isOwnMessage ? 'ml-auto' : 'mr-auto'}`}>
+            <div className={`rounded-lg px-4 py-2 ${
+                isOwnMessage 
+                    ? 'bg-blue-500 text-white rounded-br-none' 
+                    : 'bg-gray-200 text-gray-800 rounded-bl-none'
+            }`}>
+                {!isOwnMessage && (
+                    <p className="text-xs font-semibold mb-1">{username}</p>
+                )}
+                <p className="text-sm">{content}</p>
+                <p className={`text-xs mt-1 ${
+                    isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+                }`}>
+                    {timestamp}
+                </p>
             </div>
         </div>
     )

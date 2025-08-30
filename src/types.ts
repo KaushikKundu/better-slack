@@ -1,6 +1,8 @@
-type inputType = {
+type messageType = {
     username: string;
     content: string;
     timestamp: string;
+    isOwnMessage:boolean;
+    userId:string;
 }
-export type { inputType };
+export type { messageType };

@@ -5,18 +5,15 @@ import { Input } from '@/components/ui/input';
 import Message from '@/components/message';
 import Image from 'next/image';
 import { FiSend } from 'react-icons/fi';
-import { inputType } from '@/types';
+import { messageType } from '@/types';
 import socket from '@/lib/socket';
 const rooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
 
 function page() {
     const [input, setInput] = useState<string>('');
-    const [messages, setMessages] = useState<inputType[]>([]);
+    const [messages, setMessages] = useState<messageType[]>([]);
     const [room, setRoom] = useState<string>('general');
-
-    const handleSetMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInput(e.target.value);
-    };
+    const [userId] = useState(() => `user_${Math.random().toString(36).substr(2, 9)}`);
 
     const handleSendMessage = () => {
         if (input.trim() === '') return;
@@ -24,6 +21,7 @@ function page() {
             username: 'User',
             content: input,
             timestamp: new Date().toLocaleTimeString(),
+            userId
         }
         socket.emit('roomMessage', { room, msg: newMessage });
         setInput('');
@@ -43,7 +41,7 @@ function page() {
     },[]);
 
     useEffect(() => {
-        socket.on('roomMessage', (msg: inputType) => {
+        socket.on('roomMessage', (msg: messageType) => {
             setMessages((prev) => [...prev, msg]);
         })
         console.log(messages);
@@ -51,6 +49,7 @@ function page() {
             socket.off('roomMessage');
         }
     }, [socket]);
+    console.log(userId)
     return (
         <main className='flex h-screen'>
             <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r'>
@@ -78,12 +77,14 @@ function page() {
                                 username={msg.username}
                                 content={msg.content}
                                 timestamp={msg.timestamp}
+                                isOwnMessage={msg.userId == userId}
+                                userId={userId}
                             />
                         ))
                     }
                 </div>
                 <div className="flex px-1 w-full h-20 items-center py-1 gap-2 border-t border-gray-400">
-                    <Input type="text" value={input} placeholder="Type your input here" className='w-full ' onChange={(e) => handleSetMessage(e)} />
+                    <Input type="text" value={input} placeholder="Type your input here" className='w-full ' onChange={(e) => setInput(e.target.value)} />
                     <Button className='bg-primary text-white  active:opacity-50 ' onClick={() => { handleSendMessage() }}>
                         Send<FiSend size={40} />
                     </Button>
