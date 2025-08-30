@@ -1,11 +1,11 @@
 {
-  "name": "trello",
+  "name": "chatapp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "next dev",
     "build": "next build --turbopack",
-    "start": "NODE_ENV=production node server.js",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {

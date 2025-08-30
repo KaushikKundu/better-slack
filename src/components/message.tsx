@@ -1,27 +1,23 @@
 import React from 'react'
-type MessageProps = {
-    username: string;   
-    content: string;
-    timestamp: string;
-}
+import { messageType } from '@/types';
 
-function Message(message: MessageProps) {
+function ClientMessage(message: messageType) {
     const username = message?.username || 'Anonymous';
     const userInitial = username.charAt(0).toUpperCase();
     return (
-        <div className='flex items-start w-2/3 my-3 bg-accent p-2 rounded-b-sm' >
+        <div className='flex  w-2/4 my-1 bg-primary p-2 rounded-md' >
             <div className='w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold mr-3'>
                 {userInitial}
             </div>
             <div className='w-full'>
-                <div className='flex items-center justify-between'>
+                <div className='flex items-center justify-between text-white font-extralight tracking-wide'>
                     <div className='flex items-center'>{username}</div>
                     <span>{message?.timestamp}</span>
                 </div>
-                <p>{message?.content}</p>
+                <p className='text-white text-lg font-medium'>{message?.content}</p>
             </div>
         </div>
     )
 }
 
-export default Message;
+export default ClientMessage;

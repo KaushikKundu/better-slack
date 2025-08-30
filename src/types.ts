@@ -1,7 +1,6 @@
-type messageType = {
-    id: string;
+type inputType = {
     username: string;
     content: string;
     timestamp: string;
 }
-export type { messageType };
+export type { inputType };
