@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Message from '@/components/message';
@@ -13,7 +13,15 @@ function page() {
     const [input, setInput] = useState<string>('');
     const [messages, setMessages] = useState<messageType[]>([]);
     const [room, setRoom] = useState<string>('general');
+    const [searchRoomInput, setSearchRoomInput] = useState<string>('');
     const [userId] = useState(() => `user_${Math.random().toString(36).substr(2, 9)}`);
+
+    const filteredRooms = useMemo(() => {
+        if(searchRoomInput.trim() == '') return rooms;
+        return rooms.filter(room => 
+            room.toLowerCase().includes(searchRoomInput.toLowerCase())
+        )
+    },[searchRoomInput])
 
     const handleSendMessage = () => {
         if (input.trim() === '') return;
@@ -49,15 +57,15 @@ function page() {
             socket.off('roomMessage');
         }
     }, [socket]);
-    console.log(userId)
+    console.log(filteredRooms)
     return (
         <main className='flex h-screen'>
             <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r'>
                 <Button className='w-full cursor-pointer' >Create Room</Button>
-                <Input className='mt-3' placeholder='Search Room' />
+                <Input className='mt-3' placeholder='Search Room' onChange={e => setSearchRoomInput(e.target.value)}/>
                 <div>
                     {
-                        rooms.map((room) => (
+                        filteredRooms.map((room) => (
                             <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-accent'
                                 onClick={() =>
                                     handleJoinRoom(room)
@@ -68,12 +76,13 @@ function page() {
             </div>
             <section className='flex-1 h-screen py-2 flex flex-col justify-between'>
                 <div className='h-12 border-b border-gray-300 flex items-center px-3'>
-                    <h1 className='font-bold text-lg'># general</h1>
+                    <h1 className='font-bold text-lg'># {room} </h1>
                 </div>
-                <div className='h-full overflow-y-auto px-3 flex flex-col items-end'>
+                <div className='h-full overflow-y-auto overflow-x-hidden px-3 flex flex-col items-end py-2'>
                     {
                         messages.map((msg) => (
                             <Message
+                                key={msg.timestamp}
                                 username={msg.username}
                                 content={msg.content}
                                 timestamp={msg.timestamp}
@@ -84,7 +93,14 @@ function page() {
                     }
                 </div>
                 <div className="flex px-1 w-full h-20 items-center py-1 gap-2 border-t border-gray-400">
-                    <Input type="text" value={input} placeholder="Type your input here" className='w-full ' onChange={(e) => setInput(e.target.value)} />
+                    <Input type="text" value={input} placeholder="Type your input here" className='w-full ' onChange={(e) => setInput(e.target.value)} 
+                    onKeyDown={e => {
+                        if(e.key == "Enter"){
+                            e.preventDefault();
+                            handleSendMessage();
+                        }
+                    }}
+                    />
                     <Button className='bg-primary text-white  active:opacity-50 ' onClick={() => { handleSendMessage() }}>
                         Send<FiSend size={40} />
                     </Button>
@@ -97,7 +113,7 @@ function page() {
                     <h2 className='font-bold my-5 text-lg'>Members</h2>
                     <div className='overflow-y-auto'>
                         {messages.map((user) => (
-                            <div className='flex items-center justify-start mb-3'>
+                            <div className='flex items-center justify-start mb-3' key={user.userId}>
                                 <Image
                                     src="/profile.jpg"
                                     alt={user.username}
@@ -113,7 +129,7 @@ function page() {
                     </div>
                 </div>
                 <Button className='w-full mt-auto bg-white text-red-600 border-2 border-red-600 cursor-pointer hover:bg-red-600 hover:text-white'>
-                    Leave Room
+                    Leave Server
                 </Button>
             </section>
 

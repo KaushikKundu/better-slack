@@ -7,7 +7,7 @@ function ClientMessage({username,content,isOwnMessage,timestamp}: messageType) {
         <div className={`mb-4 max-w-xs lg:max-w-md ${isOwnMessage ? 'ml-auto' : 'mr-auto'}`}>
             <div className={`rounded-lg px-4 py-2 ${
                 isOwnMessage 
-                    ? 'bg-blue-500 text-white rounded-br-none' 
+                    ? 'bg-accent-foreground text-white rounded-br-none' 
                     : 'bg-gray-200 text-gray-800 rounded-bl-none'
             }`}>
                 {!isOwnMessage && (
