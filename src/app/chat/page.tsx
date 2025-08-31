@@ -7,21 +7,26 @@ import Image from 'next/image';
 import { FiSend } from 'react-icons/fi';
 import { messageType } from '@/types';
 import socket from '@/lib/socket';
-const rooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import RoomModal from '@/components/modal';
+const initialRooms = ['general', 'random', 'sports', 'news', 'travel', 'food'];
 
 function page() {
     const [input, setInput] = useState<string>('');
     const [messages, setMessages] = useState<messageType[]>([]);
     const [room, setRoom] = useState<string>('general');
+    const [rooms, setRooms] = useState<string[]>(initialRooms);
     const [searchRoomInput, setSearchRoomInput] = useState<string>('');
     const [userId] = useState(() => `user_${Math.random().toString(36).substr(2, 9)}`);
+    const [modalOpen, setModalOpen] = useState(false);
+
 
     const filteredRooms = useMemo(() => {
         if(searchRoomInput.trim() == '') return rooms;
         return rooms.filter(room => 
             room.toLowerCase().includes(searchRoomInput.toLowerCase())
         )
-    },[searchRoomInput])
+    },[searchRoomInput,rooms])
 
     const handleSendMessage = () => {
         if (input.trim() === '') return;
@@ -57,16 +62,19 @@ function page() {
             socket.off('roomMessage');
         }
     }, [socket]);
-    console.log(filteredRooms)
+
     return (
         <main className='flex h-screen'>
-            <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r'>
-                <Button className='w-full cursor-pointer' >Create Room</Button>
+            <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r bg-accent'>
+                <div className='text-2xl font-bold p-2  mb-2 flex jjustify-center items-center gap-1'>
+                    <IoChatbubbleEllipsesOutline/>
+                    Chat App</div>
+                <Button className='w-full cursor-pointer' onClick={()=> setModalOpen(true)}>Create Room</Button>
                 <Input className='mt-3' placeholder='Search Room' onChange={e => setSearchRoomInput(e.target.value)}/>
                 <div>
                     {
                         filteredRooms.map((room) => (
-                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-accent'
+                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-white'
                                 onClick={() =>
                                     handleJoinRoom(room)
                                 } ># {room} </h1>
@@ -74,6 +82,11 @@ function page() {
                     }
                 </div>
             </div>
+            <RoomModal 
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            onSubmit={(newRoom) => setRooms([...rooms, newRoom])}
+        />
             <section className='flex-1 h-screen py-2 flex flex-col justify-between'>
                 <div className='h-12 border-b border-gray-300 flex items-center px-3'>
                     <h1 className='font-bold text-lg'># {room} </h1>
@@ -92,8 +105,8 @@ function page() {
                         ))
                     }
                 </div>
-                <div className="flex px-1 w-full h-20 items-center py-1 gap-2 border-t border-gray-400">
-                    <Input type="text" value={input} placeholder="Type your input here" className='w-full ' onChange={(e) => setInput(e.target.value)} 
+                <div className="flex px-1 w-full h-20 items-center py-1 gap-2">
+                    <Input type="text" value={input} placeholder="Type your input here" className='w-full bg-primary/50' onChange={(e) => setInput(e.target.value)} 
                     onKeyDown={e => {
                         if(e.key == "Enter"){
                             e.preventDefault();
@@ -106,11 +119,11 @@ function page() {
                     </Button>
                 </div>
             </section>
-            <section className='w-64 h-screen p-3 border-l border-gray-300 flex flex-col'>
+            <section className='w-64 h-screen p-3 border-l border-gray-300 flex flex-col bg-accent'>
                 <div className="flex-1">
-                    <h1 className='font-bold text-2xl'>Room Info</h1>
+                    <h1 className='font-medium text-xl'>Room Info</h1>
                     <p className='mt-3'>This is the general room. Feel free to chat about anything!</p>
-                    <h2 className='font-bold my-5 text-lg'>Members</h2>
+                    <h2 className='font-medium my-5 text-lg'>Members</h2>
                     <div className='overflow-y-auto'>
                         {messages.map((user) => (
                             <div className='flex items-center justify-start mb-3' key={user.userId}>
