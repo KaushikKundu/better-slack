@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { email, z } from 'zod'
  
 export const SignupFormSchema = z.object({
   name: z
@@ -10,6 +10,13 @@ export const SignupFormSchema = z.object({
     .string()
     .min(6, { message: 'Be at least 8 characters long' })
     .trim(),
+})
+export const SignInSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+  password: z
+    .string()
+    .min(6, { message: 'Be at least 8 characters long' })
+    .trim()
 })
  
 export type FormState =
