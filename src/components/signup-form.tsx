@@ -26,10 +26,11 @@ export function SignupForm({
             <div className="grid gap-6">
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <Label htmlFor="email">Name</Label>
+                  <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
-                    type="name"
+                    type="text"
+                    name="name"
                     placeholder="Max"
                     required
                   />
@@ -40,6 +41,7 @@ export function SignupForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    name="email"
                     required
                   />
                 </div>
@@ -53,7 +55,7 @@ export function SignupForm({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input id="password" type="password" name="password" required />
                 </div>
                 <Button type="submit" className="w-full">
                   Signup
