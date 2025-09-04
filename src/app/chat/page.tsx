@@ -78,7 +78,7 @@ function page() {
             socket.emit('leaveRoom', room);
         }
     }, []);
-    
+
     useEffect(() => {
         socket.on('roomMessage', (msg: messageType) => {
             setMessages((prev) => [...prev, msg]);
@@ -89,7 +89,7 @@ function page() {
     }, [socket]);
     return (
         <main className='flex h-screen'>
-            <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r bg-accent'>
+            <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r bg-sidebar'>
                 <div className='text-2xl font-bold p-2  mb-2 flex jjustify-center items-center gap-1'>
                     <IoChatbubbleEllipsesOutline />
                     Chat App</div>
@@ -98,7 +98,7 @@ function page() {
                 <div>
                     {
                         filteredRooms.map((room) => (
-                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-white'
+                            <h1 key={room} className='p-2 mt-3 rounded cursor-pointer hover:bg-primary active:bg-primary/90'
                                 onClick={() =>
                                     handleJoinRoom(room)
                                 } ># {room} </h1>

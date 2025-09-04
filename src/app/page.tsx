@@ -1,9 +1,23 @@
-export default function Home() {
-  
-    
+import { ServerGrid } from "@/components/server-grid"
+import { Sidebar } from "@/components/sidebar"
+import { Header } from "@/components/header"
+
+export default function DashboardPage() {
   return (
-    <div>
-      hello
+    <div className="flex h-screen bg-background">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-foreground mb-2">Discover Servers</h1>
+              <p className="text-muted-foreground">Find and join team servers to collaborate with your colleagues</p>
+            </div>
+            <ServerGrid />
+          </div>
+        </main>
+      </div>
     </div>
-  );
+  )
 }
