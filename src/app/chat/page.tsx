@@ -18,14 +18,8 @@ function page() {
     const [rooms, setRooms] = useState<string[]>(initialRooms);
     const [searchRoomInput, setSearchRoomInput] = useState<string>('');
     const [modalOpen, setModalOpen] = useState(false);
-    const [user,setUser] = useState<UserType | null>(null);
-     async function fetchUser() {
-        const res = await fetch("/api/user");
-        if(res.ok){
-            const data = await res.json();
-            setUser(data);
-        }    
-    }
+    const [user, setUser] = useState<UserType | null>();
+
 
     const filteredRooms = useMemo(() => {
         if (searchRoomInput.trim() == '') return rooms;
@@ -34,14 +28,33 @@ function page() {
         )
     }, [searchRoomInput, rooms])
 
-    const handleSendMessage = () => {
-        if (input.trim() === '' || !user)  return;
+    const handleSendMessage = async () => {
+        if (input.trim() === '') return;
         const newMessage = {
-            userId:user.id,
-            username: user.name,
             content: input,
-            timestamp: new Date().toLocaleTimeString(),
-            
+            room,
+            userId: user?.id
+        }
+        try {
+            const res = await fetch("/api/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newMessage),
+            });
+
+            const savedMessage = await res.json();
+            console.log(savedMessage)
+            socket.emit('roomMessage', {
+                room,
+                msg: {
+                    userId: savedMessage.userId,
+                    username: savedMessage.user.name,
+                    content: savedMessage.content,
+                    timestamp: new Date(savedMessage.timestamp).toLocaleTimeString(),
+                },
+            })
+        } catch (err: any) {
+            console.error(err);
         }
         socket.emit('roomMessage', { room, msg: newMessage });
         setInput('');
@@ -54,13 +67,18 @@ function page() {
         setRoom(newRoom);
     }
     useEffect(() => {
-        socket.emit('joinRoom', room);
+        async function fetchUser() {
+            const res = await fetch("/api/user");
+            const data = await res.json();
+            setUser(data);
+        }
         fetchUser();
+        socket.emit('joinRoom', room);
         return () => {
             socket.emit('leaveRoom', room);
         }
     }, []);
-
+    
     useEffect(() => {
         socket.on('roomMessage', (msg: messageType) => {
             setMessages((prev) => [...prev, msg]);
@@ -69,7 +87,6 @@ function page() {
             socket.off('roomMessage');
         }
     }, [socket]);
-
     return (
         <main className='flex h-screen'>
             <div className='w-48 h-full p-3 flex flex-col border-gray-300 border-r bg-accent'>
@@ -102,13 +119,14 @@ function page() {
                     {
                         messages.length ? messages.map((msg) => (
                             <Message
-                                key={msg.timestamp}
+                                key={msg.createdAt}
                                 username={msg.username}
                                 content={msg.content}
-                                timestamp={msg.timestamp}
-                                isOwnMessage={msg.userId == msg.userId}
+                                createdAt={new Date(msg.createdAt).toLocaleTimeString()}
+                                isOwnMessage={msg.userId === user?.id}
                                 userId={msg.userId}
                             />
+
                         )) : (
                             <div className="w-full my-auto">
                                 <p className='text-center text-xl text-gray-700'>No messages yet. Start the conversation!</p>
@@ -137,10 +155,10 @@ function page() {
                     <h2 className=' my-5 text-lg'>Members</h2>
                     <div className='overflow-y-auto'>
                         {messages.map((user) => (
-                            <div className='flex items-center justify-start mb-3' key={user.userId}>
+                            <div className='flex items-center justify-start mb-3' key={user.createdAt}>
                                 <Image
                                     src="/profile.jpg"
-                                    alt={user.username}
+                                    alt="profilepic"
                                     width={40}
                                     height={40}
                                     className='rounded-full mr-2'

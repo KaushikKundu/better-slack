@@ -1,10 +1,12 @@
+
 type messageType = {
-    username: string;
-    content: string;
-    timestamp: string;
-    isOwnMessage:boolean;
-    userId:string;
-}
+  username: string;
+  content: string; 
+  createdAt: string;
+  isOwnMessage: boolean;
+  userId: string;
+};
+
 type UserType = {
     id:string,
     name:string,
