@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import Message from '@/components/message';
 import Image from 'next/image';
 import { FiSend } from 'react-icons/fi';
-import { messageType } from '@/types';
+import { messageType, UserType } from '@/types';
 import socket from '@/lib/socket';
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import RoomModal from '@/components/modal';
@@ -17,9 +17,15 @@ function page() {
     const [room, setRoom] = useState<string>('general');
     const [rooms, setRooms] = useState<string[]>(initialRooms);
     const [searchRoomInput, setSearchRoomInput] = useState<string>('');
-    const [userId] = useState(() => `user_${Math.random().toString(36).substr(2, 9)}`);
     const [modalOpen, setModalOpen] = useState(false);
-
+    const [user,setUser] = useState<UserType | null>(null);
+     async function fetchUser() {
+        const res = await fetch("/api/user");
+        if(res.ok){
+            const data = await res.json();
+            setUser(data);
+        }    
+    }
 
     const filteredRooms = useMemo(() => {
         if (searchRoomInput.trim() == '') return rooms;
@@ -29,12 +35,13 @@ function page() {
     }, [searchRoomInput, rooms])
 
     const handleSendMessage = () => {
-        if (input.trim() === '') return;
+        if (input.trim() === '' || !user)  return;
         const newMessage = {
-            username: 'User',
+            userId:user.id,
+            username: user.name,
             content: input,
             timestamp: new Date().toLocaleTimeString(),
-            userId
+            
         }
         socket.emit('roomMessage', { room, msg: newMessage });
         setInput('');
@@ -48,6 +55,7 @@ function page() {
     }
     useEffect(() => {
         socket.emit('joinRoom', room);
+        fetchUser();
         return () => {
             socket.emit('leaveRoom', room);
         }
@@ -57,7 +65,6 @@ function page() {
         socket.on('roomMessage', (msg: messageType) => {
             setMessages((prev) => [...prev, msg]);
         })
-        console.log(messages);
         return () => {
             socket.off('roomMessage');
         }
@@ -99,8 +106,8 @@ function page() {
                                 username={msg.username}
                                 content={msg.content}
                                 timestamp={msg.timestamp}
-                                isOwnMessage={msg.userId == userId}
-                                userId={userId}
+                                isOwnMessage={msg.userId == msg.userId}
+                                userId={msg.userId}
                             />
                         )) : (
                             <div className="w-full my-auto">

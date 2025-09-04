@@ -5,4 +5,9 @@ type messageType = {
     isOwnMessage:boolean;
     userId:string;
 }
-export type { messageType };
+type UserType = {
+    id:string,
+    name:string,
+    email:string
+}
+export type { messageType,UserType };

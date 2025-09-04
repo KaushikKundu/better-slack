@@ -8,8 +8,6 @@ import dotenv from "dotenv";
 import { cookies } from "next/headers";
 
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
-console.log(JWT_SECRET);
 
 export async function signup(formData: FormData): Promise<void> {
     const validatedFields = SignupFormSchema.safeParse({
@@ -85,11 +83,12 @@ export async function login(formData: FormData) {
         if (!existingUser) {
             throw new Error("user doesn't exist.");
         }
-        const isPasswordCorrect = bcrypt.compare(existingUser.password, password);
+        const isPasswordCorrect = await bcrypt.compare(password,existingUser.password);
         if (!isPasswordCorrect) {
             throw new Error("wrong password");
         }
         const payload = {
+            userId: existingUser.id,
             name: existingUser.name,
             email: existingUser.email
         };
@@ -105,7 +104,7 @@ export async function login(formData: FormData) {
             maxAge: 60 * 60 * 24 * 7,
             path: "/",
         });
-        console.log("user logged in successfully.");
+       
     } catch (error) {
         console.error(error);
     }
